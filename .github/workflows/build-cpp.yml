@@ -1,0 +1,112 @@
+# Copyright (c) 2019-2020-2021 Luca Cappa
+# Copyright (c) 2021 AICDG
+# Released under the term specified in file LICENSE.txt
+# SPDX short identifier: MIT
+name: Build with CMake
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  job:
+    name: ${{ matrix.os }}-hosted-basic
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        #        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ windows-latest ]
+        include:
+          - os: windows-latest
+            triplet: x64-windows
+            cxx: cl.exe
+            cc: cl.exe
+    #            vcpkgCommitId: '30124253eecff36bc90f73341edbfb4f845e2a1e'
+    #            vcpkgPackages: 'sqlite3'
+    #          - os: ubuntu-latest
+    #            triplet: x64-linux
+    #            cxx: clang++
+    #            cc: clang
+    #            vcpkgCommitId: '30124253eecff36bc90f73341edbfb4f845e2a1e'
+    #            vcpkgPackages: 'sqlite3'
+    #          - os: macos-latest
+    #            triplet: x64-osx
+    #            cxx: clang++
+    #            cc: clang
+    #            vcpkgCommitId: '30124253eecff36bc90f73341edbfb4f845e2a1e'
+    #            vcpkgPackages: 'sqlite3'
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - uses: lukka/get-cmake@latest
+
+      - uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Set Compiler Environment
+        #        if: "!endsWith(matrix.name, 'hunter')"
+        uses: lukka/set-shell-env@v1
+        with:
+          CXX: ${{ matrix.cxx }}
+          CC: ${{ matrix.cc }}
+
+      #      - name: dir
+      #        run: find $RUNNER_WORKSPACE
+      #        shell: bash
+      #
+      #      - name: Restore artifacts, or run vcpkg, build and cache artifacts
+      #        uses: lukka/run-vcpkg@main
+      #        id: runvcpkg
+      #        with:
+      #          vcpkgArguments: '${{ matrix.vcpkgPackages }}'
+      #          vcpkgTriplet: '${{ matrix.triplet }}'
+      #          vcpkgDirectory: '${{ runner.workspace }}/b/vcpkg'
+      #          vcpkgGitCommitId: '${{ matrix.vcpkgCommitId }}'
+      #
+      #      - name: dir
+      #        run: find $RUNNER_WORKSPACE
+      #        shell: bash
+      #
+      #      - name: Prints outputs of run-vcpkg task
+      #        run: echo "'${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT }}' '${{  steps.runvcpkg.outputs.RUNVCPKG_VCPKG_TRIPLET_OUT }}' "
+
+      - name: Run CMake+Ninja
+        uses: lukka/run-cmake@main
+        id: runcmake
+        with:
+          cmakeGenerator: 'Ninja'
+          cmakeListsOrSettingsJson: 'CMakeListsTxtBasic'
+          cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
+          useVcpkgToolchainFile: true
+          buildWithCMakeArgs: '-- -v'
+          buildDirectory: '${{ runner.workspace }}/b/ninja/'
+
+#      - name: Run CMake+Ninja with triplet (cmd)
+#        uses: lukka/run-cmake@main
+#        id: runcmake_cmd
+#        with:
+#          cmakeGenerator: 'Ninja'
+#          cmakeListsOrSettingsJson: 'CMakeListsTxtBasic'
+#          cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
+#          useVcpkgToolchainFile: true
+#          buildWithCMakeArgs: '-- -v'
+#          vcpkgTriplet: ${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_TRIPLET_OUT }}
+#          buildDirectory: '${{ runner.workspace }}/b/ninja/'
+
+#      - name: Run CMake+Ninja with triplet (bash)
+#        if: false
+#        uses: lukka/run-cmake@main
+#        id: runcmake_bash
+#        with:
+#          cmakeGenerator: 'Ninja'
+#          cmakeListsOrSettingsJson: 'CMakeListsTxtBasic'
+#          cmakeListsTxtPath: '${{ github.workspace }}/cmakeliststxt/CMakeLists.txt'
+#          useVcpkgToolchainFile: true
+#          buildWithCMakeArgs: '-- -v'
+#          vcpkgTriplet: ${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_TRIPLET_OUT }}
+#          buildDirectory: '${{ runner.workspace }}/b/ninja-bash/'
+#          useShell: bash
