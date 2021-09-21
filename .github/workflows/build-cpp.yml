@@ -87,7 +87,7 @@ jobs:
           cmakeListsOrSettingsJson: 'CMakeListsTxtBasic'
           cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
           useVcpkgToolchainFile: true
-          buildWithCMakeArgs: '-- -v --parallel'
+          buildWithCMakeArgs: '-- -v -- -j0'
           buildDirectory: '${{ runner.workspace }}/b/ninja/'
 
 #      - name: Run CMake+Ninja with triplet (cmd)
