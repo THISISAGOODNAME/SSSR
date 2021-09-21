@@ -54,6 +54,11 @@ jobs:
           CXX: ${{ matrix.cxx }}
           CC: ${{ matrix.cc }}
 
+      -name: Install Vulkan SDK
+        uses: humbletim/setup-vulkan-sdk@v1.0.3
+        with:
+          vulkan-version: 1.2.182.0
+
       #      - name: dir
       #        run: find $RUNNER_WORKSPACE
       #        shell: bash
