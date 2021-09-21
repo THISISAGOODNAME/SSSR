@@ -6,7 +6,7 @@
 [![example workflow][ci-img]][ci-url]
 [![GitHub Repo stars][star-img]][star-url]
 
-[cmake-img]: https://img.shields.io/badge/cmake-3.17-1f9948.svg?style=flat-square&logo=cmake
+[cmake-img]: https://img.shields.io/badge/cmake-3.20-1f9948.svg?style=flat-square&logo=cmake
 [cmake-url]: https://cmake.org/
 [license-img]: https://img.shields.io/:license-mit-blue.svg?style=flat-square&logo=opensourceinitiative
 [license-url]: https://opensource.org/licenses/MIT
