@@ -50,8 +50,16 @@ target_include_directories(${target}
 target_link_libraries(${target}
     AppBox
     RenderDevice
+    assimp
 )
 
 set_target_properties(${target} PROPERTIES FOLDER "Apps")
+
+#set_property(TARGET ${target}  PROPERTY UNITY_BUILD ON)
+#set_target_properties(${target} PROPERTIES
+#    UNITY_BUILD ON
+#    UNITY_BUILD_MODE BATCH
+#    UNITY_BUILD_BATCH_SIZE 10
+#)
 
 install(TARGETS ${target})
