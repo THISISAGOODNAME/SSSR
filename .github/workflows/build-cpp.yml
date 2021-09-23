@@ -41,12 +41,9 @@ jobs:
           CC: ${{ matrix.cc }}
 
       - name: Install Vulkan SDK
-        run: |
-          Invoke-WebRequest -Uri "https://sdk.lunarg.com/sdk/download/1.2.182.0/windows/VulkanSDK-1.2.182.0-Installer.exe" -OutFile VulkanSDK.exe
-          $installer = Start-Process -FilePath VulkanSDK.exe -Wait -PassThru -ArgumentList @("/S");
-          $installer.WaitForExit();
-          $Env:VULKAN_SDK = "C:/VulkanSDK/1.2.182.0"
-          $Env:Path += ";C:/VulkanSDK/1.2.182.0/Bin"
+        uses: humbletim/setup-vulkan-sdk@v1.0.3
+        with:
+          vulkan-version: 1.2.182.0
 
       - name: Run CMake+Ninja
         uses: lukka/run-cmake@main
