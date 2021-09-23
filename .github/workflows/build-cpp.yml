@@ -23,20 +23,6 @@ jobs:
             triplet: x64-windows
             cxx: cl.exe
             cc: cl.exe
-    #            vcpkgCommitId: '30124253eecff36bc90f73341edbfb4f845e2a1e'
-    #            vcpkgPackages: 'sqlite3'
-    #          - os: ubuntu-latest
-    #            triplet: x64-linux
-    #            cxx: clang++
-    #            cc: clang
-    #            vcpkgCommitId: '30124253eecff36bc90f73341edbfb4f845e2a1e'
-    #            vcpkgPackages: 'sqlite3'
-    #          - os: macos-latest
-    #            triplet: x64-osx
-    #            cxx: clang++
-    #            cc: clang
-    #            vcpkgCommitId: '30124253eecff36bc90f73341edbfb4f845e2a1e'
-    #            vcpkgPackages: 'sqlite3'
 
     steps:
       - uses: actions/checkout@v2
@@ -55,29 +41,12 @@ jobs:
           CC: ${{ matrix.cc }}
 
       - name: Install Vulkan SDK
-        uses: humbletim/setup-vulkan-sdk@v1.0.3
-        with:
-          vulkan-version: 1.2.182.0
-
-      #      - name: dir
-      #        run: find $RUNNER_WORKSPACE
-      #        shell: bash
-      #
-      #      - name: Restore artifacts, or run vcpkg, build and cache artifacts
-      #        uses: lukka/run-vcpkg@main
-      #        id: runvcpkg
-      #        with:
-      #          vcpkgArguments: '${{ matrix.vcpkgPackages }}'
-      #          vcpkgTriplet: '${{ matrix.triplet }}'
-      #          vcpkgDirectory: '${{ runner.workspace }}/b/vcpkg'
-      #          vcpkgGitCommitId: '${{ matrix.vcpkgCommitId }}'
-      #
-      #      - name: dir
-      #        run: find $RUNNER_WORKSPACE
-      #        shell: bash
-      #
-      #      - name: Prints outputs of run-vcpkg task
-      #        run: echo "'${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT }}' '${{  steps.runvcpkg.outputs.RUNVCPKG_VCPKG_TRIPLET_OUT }}' "
+          run: |
+            Invoke-WebRequest -Uri "https://sdk.lunarg.com/sdk/download/1.2.182.0/windows/VulkanSDK-1.2.182.0-Installer.exe" -OutFile VulkanSDK.exe
+            $installer = Start-Process -FilePath VulkanSDK.exe -Wait -PassThru -ArgumentList @("/S");
+            $installer.WaitForExit();
+            $Env:VULKAN_SDK = "C:/VulkanSDK/1.2.182.0"
+            $Env:Path += ";C:/VulkanSDK/1.2.182.0/Bin"
 
       - name: Run CMake+Ninja
         uses: lukka/run-cmake@main
@@ -89,29 +58,3 @@ jobs:
           useVcpkgToolchainFile: true
           buildWithCMakeArgs: '--config RelWithDebInfo'
           buildDirectory: '${{ runner.workspace }}/b/ninja/'
-
-#      - name: Run CMake+Ninja with triplet (cmd)
-#        uses: lukka/run-cmake@main
-#        id: runcmake_cmd
-#        with:
-#          cmakeGenerator: 'Ninja'
-#          cmakeListsOrSettingsJson: 'CMakeListsTxtBasic'
-#          cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
-#          useVcpkgToolchainFile: true
-#          buildWithCMakeArgs: '-- -v'
-#          vcpkgTriplet: ${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_TRIPLET_OUT }}
-#          buildDirectory: '${{ runner.workspace }}/b/ninja/'
-
-#      - name: Run CMake+Ninja with triplet (bash)
-#        if: false
-#        uses: lukka/run-cmake@main
-#        id: runcmake_bash
-#        with:
-#          cmakeGenerator: 'Ninja'
-#          cmakeListsOrSettingsJson: 'CMakeListsTxtBasic'
-#          cmakeListsTxtPath: '${{ github.workspace }}/cmakeliststxt/CMakeLists.txt'
-#          useVcpkgToolchainFile: true
-#          buildWithCMakeArgs: '-- -v'
-#          vcpkgTriplet: ${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_TRIPLET_OUT }}
-#          buildDirectory: '${{ runner.workspace }}/b/ninja-bash/'
-#          useShell: bash
