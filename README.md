@@ -22,3 +22,11 @@ Super Simple Scene Renderer
 # 3rd Party Open Source Libraries
 
 - [FlyCube](https://github.com/andrejnau/FlyCube)
+- [IconFontCppHeaders](https://github.com/juliettef/IconFontCppHeaders)
+- [ImGui](https://github.com/ocornut/imgui)
+- [ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo)
+- [spdlog](https://github.com/gabime/spdlog)
+
+# Assets
+
+- [ForkAwesome](https://forkaweso.me/Fork-Awesome/)
