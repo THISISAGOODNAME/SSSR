@@ -47,14 +47,14 @@ jobs:
 #        uses: humbletim/setup-vulkan-sdk@v1.0.3
 #        with:
 #          vulkan-version: 1.2.182.0
-      - name: cache-vulkansdk
-        id: cache-vulkansdk
-        uses: actions/cache@v2
-        with:
-          path: "VulkanSDK"
-          key: VulkanSDK-${{ env.vulkan-ver }}-Installer
+#      - name: cache-vulkansdk
+#        id: cache-vulkansdk
+#        uses: actions/cache@v2
+#        with:
+#          path: "VulkanSDK"
+#          key: VulkanSDK-${{ env.vulkan-ver }}-Installer
 
-      - name: vulkansdk
+      - name: vulkan sdk
         if: steps.cache-vulkansdk.outputs.cache-hit != 'true'
         run: |
           Invoke-WebRequest -Uri https://sdk.lunarg.com/sdk/download/${{ env.vulkan-ver }}/windows/VulkanSDK-${{ env.vulkan-ver }}-Installer.exe?Human=true -OutFile VulkanSDK-${{ env.vulkan-ver }}-Installer.exe
