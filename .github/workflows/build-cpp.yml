@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       vulkan-ver: 1.2.182.0
-      VULKAN_SDK: "C:\VulkanSDK\${{ env.vulkan-ver }}"
+      VULKAN_SDK: "C:\\VulkanSDK\\${{ env.vulkan-ver }}"
     strategy:
       fail-fast: false
       matrix:
