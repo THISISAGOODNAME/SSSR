@@ -13,6 +13,9 @@ jobs:
   job:
     name: ${{ matrix.os }}-hosted-basic
     runs-on: ${{ matrix.os }}
+    env:
+      vulkan-ver: 1.2.182.0
+      VULKAN_SDK: "C:\VulkanSDK\${{ env.vulkan-ver }}"
     strategy:
       fail-fast: false
       matrix:
@@ -40,10 +43,23 @@ jobs:
           CXX: ${{ matrix.cxx }}
           CC: ${{ matrix.cc }}
 
-      - name: Install Vulkan SDK
-        uses: humbletim/setup-vulkan-sdk@v1.0.3
+#      - name: Install Vulkan SDK
+#        uses: humbletim/setup-vulkan-sdk@v1.0.3
+#        with:
+#          vulkan-version: 1.2.182.0
+      - name: cache-vulkansdk
+        id: cache-vulkansdk
+        uses: actions/cache@v2
         with:
-          vulkan-version: 1.2.182.0
+          path: "VulkanSDK"
+          key: VulkanSDK-${{ env.vulkan-ver }}-Installer
+
+      - name: vulkansdk
+        if: steps.cache-vulkansdk.outputs.cache-hit != 'true'
+        run: |
+          Invoke-WebRequest -Uri https://sdk.lunarg.com/sdk/download/${{ env.vulkan-ver }}/windows/VulkanSDK-${{ env.vulkan-ver }}-Installer.exe?Human=true -OutFile VulkanSDK-${{ env.vulkan-ver }}-Installer.exe
+          $installer = Start-Process -FilePath VulkanSDK-${{ env.vulkan-ver }}-Installer.exe -Wait -PassThru -ArgumentList @("/S");
+          $installer.WaitForExit();
 
       - name: Run CMake+Ninja
         uses: lukka/run-cmake@main
@@ -53,5 +69,5 @@ jobs:
           cmakeListsOrSettingsJson: 'CMakeListsTxtBasic'
           cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
           useVcpkgToolchainFile: true
-          buildWithCMakeArgs: '--config RelWithDebInfo'
+          buildWithCMakeArgs: '--config RelWithDebInfo -j 20'
           buildDirectory: '${{ runner.workspace }}/b/ninja/'
