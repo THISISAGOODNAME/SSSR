@@ -61,6 +61,8 @@ jobs:
           $installer = Start-Process -FilePath VulkanSDK-${{ env.vulkan-ver }}-Installer.exe -Wait -PassThru -ArgumentList @("/S");
           $installer.WaitForExit();
 
+      # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
+      # Windows VM has a 2-core CPU
       - name: Run CMake+Ninja
         uses: lukka/run-cmake@main
         id: runcmake
@@ -69,5 +71,5 @@ jobs:
           cmakeListsOrSettingsJson: 'CMakeListsTxtBasic'
           cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
           useVcpkgToolchainFile: true
-          buildWithCMakeArgs: '--config RelWithDebInfo -j 20'
+          buildWithCMakeArgs: '--config RelWithDebInfo -j 2'
           buildDirectory: '${{ runner.workspace }}/b/ninja/'
