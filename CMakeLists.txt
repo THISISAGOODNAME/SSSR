@@ -18,3 +18,9 @@ add_subdirectory(src/01Triangle)
 include(3rdparty/imgui)
 
 add_subdirectory(src/SSSR)
+
+option(SSSR_BUILD_TOOLS "Whether build SSSR tools" ON)
+
+if (${SSSR_BUILD_TOOLS})
+    add_subdirectory(src/Tools)
+endif()

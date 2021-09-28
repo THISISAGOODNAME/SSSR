@@ -26,6 +26,8 @@ Super Simple Scene Renderer
 - [ImGui](https://github.com/ocornut/imgui)
 - [ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo)
 - [spdlog](https://github.com/gabime/spdlog)
+- [dds-ktx](https://github.com/septag/dds-ktx)
+  - [sokol](https://github.com/floooh/sokol) - For DDSKTXviewer
 
 # Assets
 

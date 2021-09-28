@@ -1,0 +1,1 @@
+add_executable(DDSKTXviewer dds-ktx/ctexview/ctexview.c)
