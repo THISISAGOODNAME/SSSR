@@ -15,10 +15,18 @@ cbuffer Settings
     float4 color;
 };
 
+cbuffer MVP
+{
+    float4x4 model;
+    float4x4 view;
+    float4x4 proj;
+};
+
 VS_OUTPUT mainVS(VS_INPUT input)
 {
     VS_OUTPUT output;
-    output.pos = float4(input.pos, 1.0f);
+//     output.pos = float4(input.pos, 1.0f);
+    output.pos = mul(proj, mul(view, mul(model, float4(input.pos, 1.0f))));
     output.col = input.col;
     return output;
 }

@@ -4,6 +4,12 @@ set(include_path "${CMAKE_CURRENT_SOURCE_DIR}")
 set(source_path "${CMAKE_CURRENT_SOURCE_DIR}")
 set(shaders_path "${assets_path}/shaders/SSSR")
 
+set(headers
+    ${source_path}/SSSRCamera/Camera.h
+    ${source_path}/Misc/Trackball.h
+    ${source_path}/Misc/UtilsMath.h
+)
+
 set(sources
     ${source_path}/main.cpp
 )
