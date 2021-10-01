@@ -33,7 +33,7 @@ private:
 	const CameraPositionerInterface* positioner_;
 };
 
-class CameraPositioner_FirstPerson final : public CameraPositionerInterface
+class CameraPositioner_FirstPerson final : public CameraPositionerInterface , public InputEvents
 {
 public:
 	CameraPositioner_FirstPerson() = default;
@@ -42,6 +42,90 @@ public:
 	, cameraOrientation_(glm::lookAt(pos, target, up))
 	, up_(up)
 	{}
+
+	virtual void OnKey(int key, int action) override
+	{
+	    const bool pressed = action != GLFW_RELEASE;
+	    if (key == GLFW_KEY_W)
+	        movement_.forward_ = pressed;
+	    if (key == GLFW_KEY_S)
+	        movement_.backward_ = pressed;
+	    if (key == GLFW_KEY_A)
+	        movement_.left_ = pressed;
+	    if (key == GLFW_KEY_D)
+	        movement_.right_ = pressed;
+	    if (key == GLFW_KEY_1)
+	        movement_.up_ = pressed;
+	    if (key == GLFW_KEY_2)
+	        movement_.down_ = pressed;
+	    if ((key == GLFW_KEY_LEFT_SHIFT || key == GLFW_KEY_RIGHT_SHIFT) && GLFW_MOD_SHIFT)
+	        movement_.fastSpeed_ = pressed;
+	    if (key == GLFW_KEY_SPACE)
+	        setUpVector(glm::vec3(0.0f, 1.0f, 0.0f));
+	}
+
+	virtual void OnMouse(bool first, double xpos, double ypos) override
+	{
+	    glm::vec2 mousePos = glm::vec2();
+	    int width = 1280, height = 720;
+	    //glfwGetFramebufferSize(window, &width, &height);
+	    mousePos.x = static_cast<float>(xpos / width);
+	    mousePos.y = static_cast<float>(ypos / height);
+	    if (mousePressed_)
+	    {
+	        const glm::vec2 delta = mousePos - mousePos_;
+	        const glm::quat deltaQuat = glm::quat(glm::vec3(-mouseSpeed_ * delta.y, mouseSpeed_ * delta.x, 0.0f));
+	        cameraOrientation_ = deltaQuat * cameraOrientation_;
+	        cameraOrientation_ = glm::normalize(cameraOrientation_);
+	        setUpVector(up_);
+	    }
+	    mousePos_ = mousePos;
+	}
+
+	virtual void OnMouseButton(int button, int action) override
+	{
+	    mousePressed_ = (button == 0 && action == GLFW_PRESS);
+	}
+
+	virtual void OnScroll(double xoffset, double yoffset) override {}
+	virtual void OnInputChar(unsigned int ch) override {}
+
+	void update(double deltaSeconds)
+	{
+	    const glm::mat4 v = glm::mat4_cast(cameraOrientation_);
+
+	    const glm::vec3 forward = -glm::vec3(v[0][2], v[1][2], v[2][2]);
+	    const glm::vec3 right = glm::vec3(v[0][0], v[1][0], v[2][0]);
+	    const glm::vec3 up = glm::cross(right, forward);
+
+	    glm::vec3 accel(0.0f);
+
+	    if (movement_.forward_) accel += forward;
+	    if (movement_.backward_) accel -= forward;
+
+	    if (movement_.left_) accel -= right;
+	    if (movement_.right_) accel += right;
+
+	    if (movement_.up_) accel += up;
+	    if (movement_.down_) accel -= up;
+
+	    if (movement_.fastSpeed_) accel *= fastCoef_;
+
+	    if (accel == glm::vec3(0))
+	    {
+	        // decelerate naturally according to the damping value
+	        moveSpeed_ -= moveSpeed_ * std::min((1.0f / damping_) * static_cast<float>(deltaSeconds), 1.0f);
+	    }
+	    else
+	    {
+	        // acceleration
+	        moveSpeed_ += accel * acceleration_ * static_cast<float>(deltaSeconds);
+	        const float maxSpeed = movement_.fastSpeed_ ? maxSpeed_ * fastCoef_ : maxSpeed_;
+	        if (glm::length(moveSpeed_) > maxSpeed) moveSpeed_ = glm::normalize(moveSpeed_) * maxSpeed;
+	    }
+
+	    cameraPosition_ += moveSpeed_ * static_cast<float>(deltaSeconds);
+	}
 
 	void update(double deltaSeconds, const glm::vec2& mousePos, bool mousePressed)
 	{
@@ -147,6 +231,7 @@ private:
 	glm::quat cameraOrientation_ = glm::quat(glm::vec3(0));
 	glm::vec3 moveSpeed_ = glm::vec3(0.0f);
 	glm::vec3 up_ = glm::vec3(0.0f, 1.0f, 0.0f);
+	bool mousePressed_ = false;
 };
 
 class CameraPositioner_MoveTo final : public CameraPositionerInterface

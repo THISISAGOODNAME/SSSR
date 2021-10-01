@@ -7,16 +7,6 @@
 
 #include "SSSRCamera/Camera.h"
 
-struct MouseState
-{
-    glm::vec2 pos = glm::vec2(0.0f);
-    bool pressedLeft = false;
-} mouseState;
-
-CameraPositioner_FirstPerson positioner( glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-//positioner.setPosition(vec3(0.0f, 0.0f, 0.0f));
-Camera camera(positioner);
-
 int main(int argc, char* argv[])
 {
     Settings settings = ParseArgs(argc, argv);
@@ -50,54 +40,11 @@ int main(int argc, char* argv[])
     ProgramHolder<VertexColor_PS, VertexColor_VS> program(*device);
     //program.ps.cbuffer.Settings.color = glm::vec4(1, 0, 0, 1);
 
-
-
     auto window = app.GetWindow();
-    glfwSetKeyCallback(
-            window,
-            [](GLFWwindow* window, int key, int scancode, int action, int mods)
-            {
-                const bool pressed = action != GLFW_RELEASE;
-                if (key == GLFW_KEY_ESCAPE && pressed)
-                    glfwSetWindowShouldClose(window, GLFW_TRUE);
-                if (key == GLFW_KEY_W)
-                    positioner.movement_.forward_ = pressed;
-                if (key == GLFW_KEY_S)
-                    positioner.movement_.backward_ = pressed;
-                if (key == GLFW_KEY_A)
-                    positioner.movement_.left_ = pressed;
-                if (key == GLFW_KEY_D)
-                    positioner.movement_.right_ = pressed;
-                if (key == GLFW_KEY_1)
-                    positioner.movement_.up_ = pressed;
-                if (key == GLFW_KEY_2)
-                    positioner.movement_.down_ = pressed;
-                if (mods & GLFW_MOD_SHIFT)
-                    positioner.movement_.fastSpeed_ = pressed;
-                if (key == GLFW_KEY_SPACE)
-                    positioner.setUpVector(glm::vec3(0.0f, 1.0f, 0.0f));
-            }
-            );
-
-    glfwSetCursorPosCallback(
-            window,
-            [](auto* window, double x, double y)
-            {
-                int width, height;
-                glfwGetFramebufferSize(window, &width, &height);
-                mouseState.pos.x = static_cast<float>(x / width);
-                mouseState.pos.y = static_cast<float>(y / height);
-            }
-            );
-
-    glfwSetMouseButtonCallback(
-            window,
-            [](auto* window, int button, int action, int mods)
-            {
-                if (button == GLFW_MOUSE_BUTTON_LEFT)
-                    mouseState.pressedLeft = action == GLFW_PRESS;
-            }
-            );
+    CameraPositioner_FirstPerson positioner( glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    //positioner.setPosition(vec3(0.0f, 0.0f, 0.0f));
+    Camera camera(positioner);
+    app.SubscribeEvents(&positioner, nullptr);
 
     const glm::mat4 projMat = glm::perspective(45.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
 
@@ -115,13 +62,7 @@ int main(int argc, char* argv[])
 
     while (!app.PollEvents())
     {
-        positioner.update(deltaSeconds, mouseState.pos, mouseState.pressedLeft);
-        //positioner.setUpVector(glm::vec3(0.0f, 1.0f, 0.0f));
-//        if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_NORMAL)
-//        {
-//
-//            positioner.update(deltaSeconds, mouseState.pos, mouseState.pressedLeft);
-//        }
+        positioner.update(deltaSeconds);
 
         const double newTimeStamp = glfwGetTime();
         deltaSeconds = static_cast<float>(newTimeStamp - timeStamp);
