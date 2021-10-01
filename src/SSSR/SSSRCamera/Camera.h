@@ -16,21 +16,47 @@ public:
 	virtual glm::vec3 getPosition() const = 0;
 };
 
-class Camera final
+class Camera final : public WindowEvents
 {
 public:
-	explicit Camera(CameraPositionerInterface& positioner)
+	explicit Camera(CameraPositionerInterface& positioner, float fovy, float width, float height, float zNear, float zFar)
 		: positioner_(&positioner)
-	{}
+		, fovy_(fovy)
+		, width_(width)
+		, height_(height)
+		, aspect_(width / height)
+		, zNear_(zNear)
+		, zFar_(zFar)
+	{
+	    projMat_ = glm::perspective(fovy_, aspect_, zNear_, zFar_);
+	}
 
 	Camera(const Camera&) = default;
 	Camera& operator = (const Camera&) = default;
 
+	void update() { projMat_ = glm::perspective(fovy_, aspect_, zNear_, zFar_); }
+
+	virtual void OnResize(int width, int height) override
+	{
+	    width_ = width;
+	    height_ = height;
+	    aspect_ = width_ / height_;
+	    update();
+	}
+
 	glm::mat4 getViewMatrix() const { return positioner_->getViewMatrix(); }
+	glm::mat4 getProjMatrix() const { return projMat_; }
 	glm::vec3 getPosition() const { return positioner_->getPosition(); }
 
 private:
 	const CameraPositionerInterface* positioner_;
+	float fovy_;
+	float width_;
+	float height_;
+	float aspect_;
+	float zNear_;
+	float zFar_;
+	glm::mat4 projMat_;
 };
 
 class CameraPositioner_FirstPerson final : public CameraPositionerInterface , public InputEvents

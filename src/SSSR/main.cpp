@@ -43,10 +43,8 @@ int main(int argc, char* argv[])
     auto window = app.GetWindow();
     CameraPositioner_FirstPerson positioner( glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     //positioner.setPosition(vec3(0.0f, 0.0f, 0.0f));
-    Camera camera(positioner);
-    app.SubscribeEvents(&positioner, nullptr);
-
-    const glm::mat4 projMat = glm::perspective(45.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
+    Camera camera(positioner, 45.0f, 1280.0f, 720.0f, 0.1f, 1000.0f);
+    app.SubscribeEvents(&positioner, &camera);
 
     const glm::mat4 modelMat = glm::mat4(1.0f);
 
@@ -74,7 +72,7 @@ int main(int argc, char* argv[])
 
         program.vs.cbuffer.MVP.model = modelMat;
         program.vs.cbuffer.MVP.view = camera.getViewMatrix();
-        program.vs.cbuffer.MVP.proj = projMat;
+        program.vs.cbuffer.MVP.proj = camera.getProjMatrix();
 
         decltype(auto) command_list = command_lists[device->GetFrameIndex()];
         device->Wait(command_lists[device->GetFrameIndex()]->GetFenceValue());
