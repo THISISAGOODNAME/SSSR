@@ -3,8 +3,8 @@
 #include <cassert>
 #include <algorithm>
 
-#include "Misc/UtilsMath.h"
-#include "Misc/Trackball.h"
+//#include "Misc/UtilsMath.h"
+//#include "Misc/Trackball.h"
 
 #include "glm/gtx/euler_angles.hpp"
 
@@ -33,7 +33,7 @@ private:
 	const CameraPositionerInterface* positioner_;
 };
 
-class CameraPositioner_FirstPerson final: public CameraPositionerInterface
+class CameraPositioner_FirstPerson final : public CameraPositionerInterface
 {
 public:
 	CameraPositioner_FirstPerson() = default;
@@ -113,12 +113,12 @@ public:
 	{
 		const glm::mat4 view = getViewMatrix();
 		const glm::vec3 dir = -glm::vec3(view[0][2], view[1][2], view[2][2]);
-		cameraOrientation_ = glm::quat_cast(glm::lookAtLH(cameraPosition_, cameraPosition_ + dir, up));
+		cameraOrientation_ = glm::quat_cast(glm::lookAt(cameraPosition_, cameraPosition_ + dir, up));
 	}
 
 	inline void lookAt(const glm::vec3& pos, const glm::vec3& target, const glm::vec3& up) {
 		cameraPosition_ = pos;
-		cameraOrientation_ = glm::quat_cast(glm::lookAtLH(pos, target, up));
+		cameraOrientation_ = glm::quat_cast(glm::lookAt(pos, target, up));
 	}
 
 public:
@@ -146,7 +146,7 @@ private:
 	glm::vec3 cameraPosition_ = glm::vec3(0.0f, 10.0f, 10.0f);
 	glm::quat cameraOrientation_ = glm::quat(glm::vec3(0));
 	glm::vec3 moveSpeed_ = glm::vec3(0.0f);
-	glm::vec3 up_ = glm::vec3(0.0f, 0.0f, 1.0f);
+	glm::vec3 up_ = glm::vec3(0.0f, 1.0f, 0.0f);
 };
 
 class CameraPositioner_MoveTo final : public CameraPositionerInterface

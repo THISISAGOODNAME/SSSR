@@ -75,7 +75,7 @@ int main(int argc, char* argv[])
                 if (mods & GLFW_MOD_SHIFT)
                     positioner.movement_.fastSpeed_ = pressed;
                 if (key == GLFW_KEY_SPACE)
-                    positioner.setUpVector(vec3(0.0f, 1.0f, 0.0f));
+                    positioner.setUpVector(glm::vec3(0.0f, 1.0f, 0.0f));
             }
             );
 
@@ -116,6 +116,12 @@ int main(int argc, char* argv[])
     while (!app.PollEvents())
     {
         positioner.update(deltaSeconds, mouseState.pos, mouseState.pressedLeft);
+        //positioner.setUpVector(glm::vec3(0.0f, 1.0f, 0.0f));
+//        if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_NORMAL)
+//        {
+//
+//            positioner.update(deltaSeconds, mouseState.pos, mouseState.pressedLeft);
+//        }
 
         const double newTimeStamp = glfwGetTime();
         deltaSeconds = static_cast<float>(newTimeStamp - timeStamp);
