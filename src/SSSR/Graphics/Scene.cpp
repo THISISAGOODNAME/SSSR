@@ -11,12 +11,15 @@ Scene::Scene(const Settings& settings, GLFWwindow* window, int width, int height
     , m_width(width)
     , m_height(height)
     , m_upload_command_list(m_device->CreateRenderCommandList())
+    , m_model_sphere(*m_device, *m_upload_command_list, ASSETS_PATH"model/sphere.obj")
+    , m_forwardPBR_pass(*m_device, *m_upload_command_list, { m_model_sphere, m_render_target_view, m_camera }, width, height)
     , m_imgui_pass(*m_device, *m_upload_command_list, { m_render_target_view, *this, m_settings }, width, height, window)
     , m_cameraFPSPositioner(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f))
     , m_camera(m_cameraFPSPositioner, 45.0f, 1280.0f, 720.0f, 0.1f, 1000.0f)
 {
     CreateRT();
 
+    m_passes.push_back({ "Forward PBR Pass", m_forwardPBR_pass });
     m_passes.push_back({ "ImGui Pass", m_imgui_pass });
 
     for (uint32_t i = 0; i < settings.frame_count * m_passes.size(); ++i)
@@ -41,6 +44,13 @@ void Scene::RenderFrame()
     {
         desc.pass.get().OnUpdate();
     }
+
+    // timestep
+    static double timeStamp = glfwGetTime();
+    const double newTimeStamp = glfwGetTime();
+    double deltaSeconds = static_cast<float>(newTimeStamp - timeStamp);
+    timeStamp = newTimeStamp;
+    m_cameraFPSPositioner.update(static_cast<double>(deltaSeconds));
 
     m_render_target_view = m_device->GetBackBuffer(m_device->GetFrameIndex());
 

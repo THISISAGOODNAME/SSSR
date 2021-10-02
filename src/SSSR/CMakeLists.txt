@@ -13,6 +13,7 @@ set(headers
     ${source_path}/Graphics/Passes/RenderPass.h
     ${source_path}/Graphics/Passes/ImGuiPass.h
     ${source_path}/Graphics/Passes/ImGuiSettings.h
+    ${source_path}/Graphics/Passes/ForwardPBRPass.h
 )
 
 set(sources
@@ -20,16 +21,19 @@ set(sources
     ${source_path}/Graphics/Scene.cpp
     ${source_path}/Graphics/SSSRSettings.cpp
     ${source_path}/Graphics/Passes/ImGuiPass.cpp
+    ${source_path}/Graphics/Passes/ForwardPBRPass.cpp
 )
 
 set(pixel_shaders
     ${shaders_path}/VertexColor_PS.hlsl
     ${shaders_path}/ImGuiPass_PS.hlsl
+    ${shaders_path}/ForwardPBRPass_PS.hlsl
 )
 
 set(vertex_shaders
     ${shaders_path}/VertexColor_VS.hlsl
     ${shaders_path}/ImGuiPass_VS.hlsl
+    ${shaders_path}/ForwardPBRPass_VS.hlsl
 )
 
 set_property(SOURCE ${pixel_shaders} PROPERTY VS_SHADER_ENTRYPOINT mainPS)
@@ -69,6 +73,8 @@ target_link_libraries(${target}
     assimp
     imgui
     IconFontCppHeaders
+    Geometry
+    Texture
 )
 
 set_target_properties(${target} PROPERTIES FOLDER "Apps")

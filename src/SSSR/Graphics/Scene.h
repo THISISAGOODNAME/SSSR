@@ -7,6 +7,7 @@
 #include "SSSRSettings.h"
 #include "SSSRCamera/Camera.h"
 
+#include "Passes/ForwardPBRPass.h"
 #include "Passes/ImGuiPass.h"
 
 #include <string>
@@ -52,6 +53,9 @@ private:
     std::shared_ptr<Resource> m_render_target_view;
     std::shared_ptr<Resource> m_depth_stencil_view;
 
+    Model m_model_sphere;
+
+    ForwardPBRPass m_forwardPBR_pass;
     ImGuiPass m_imgui_pass;
     SSSRSettings m_settings;
 
