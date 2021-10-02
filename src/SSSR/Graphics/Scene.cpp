@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <chrono>
 #include <glm/gtx/transform.hpp>
+#include <IconsForkAwesome.h>
 
 Scene::Scene(const Settings& settings, GLFWwindow* window, int width, int height)
     : m_device(CreateRenderDevice(settings, window))
@@ -24,7 +25,8 @@ Scene::Scene(const Settings& settings, GLFWwindow* window, int width, int height
     m_upload_command_list->Close();
     m_device->ExecuteCommandLists({ m_upload_command_list });
 
-    m_settings.Set("gpu_name", m_device->GetGpuName());
+//    m_settings.Set(ICON_FK_FILE_O"gpu_name", m_device->GetGpuName());
+    m_settings.Set("gpu_name", ICON_FK_FILE_O + m_device->GetGpuName());
     OnModifySSSRSettings(m_settings);
 }
 

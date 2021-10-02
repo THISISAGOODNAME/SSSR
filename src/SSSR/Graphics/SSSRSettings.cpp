@@ -1,4 +1,5 @@
 #include "SSSRSettings.h"
+#include <IconsForkAwesome.h>
 #include <cmath>
 #include <imgui.h>
 

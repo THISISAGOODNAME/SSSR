@@ -1,5 +1,7 @@
 #include "ImGuiPass.h"
 
+#include <IconsForkAwesome.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -190,6 +192,29 @@ void ImGuiPass::CreateFontsTexture(RenderCommandList& command_list)
 {
     // Build texture atlas
     ImGuiIO& io = ImGui::GetIO();
+
+    // Load text font
+    io.Fonts->Clear();
+    const char* fontFile = ASSETS_PATH"fonts/Roboto/Roboto-Medium.ttf";
+    ImFontConfig fontConfig;
+    fontConfig.GlyphRanges = io.Fonts->GetGlyphRangesDefault(); // basic + extended Latin only
+    ImFont* font = io.Fonts->AddFontFromFileTTF(fontFile, 14.0f, &fontConfig);
+    if(!font)
+        io.Fonts->AddFontDefault();
+
+    // Load and merge icon font
+    const char* iconFontFile = ASSETS_PATH"fonts/ForkAwesome/forkawesome-webfont.ttf";
+    static const ImWchar iconsRanges[] = { ICON_MIN_FK, ICON_MAX_FK, 0 }; // must persist for font lifetime
+    ImFontConfig iconsConfig;
+    iconsConfig.MergeMode = true;
+    iconsConfig.GlyphRanges = iconsRanges;
+    iconsConfig.GlyphMinAdvanceX = 13.0f; // align icons
+    iconsConfig.PixelSnapH = true;
+    iconsConfig.OversampleH = 1;
+    iconsConfig.OversampleV = 1;
+    io.Fonts->AddFontFromFileTTF(iconFontFile, 13.0f, &iconsConfig);
+
+
     unsigned char* pixels;
     int width, height;
     io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
