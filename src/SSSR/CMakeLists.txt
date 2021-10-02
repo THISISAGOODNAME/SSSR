@@ -8,18 +8,28 @@ set(headers
     ${source_path}/SSSRCamera/Camera.h
     ${source_path}/Misc/Trackball.h
     ${source_path}/Misc/UtilsMath.h
+    ${source_path}/Graphics/Scene.h
+    ${source_path}/Graphics/SSSRSettings.h
+    ${source_path}/Graphics/Passes/RenderPass.h
+    ${source_path}/Graphics/Passes/ImGuiPass.h
+    ${source_path}/Graphics/Passes/ImGuiSettings.h
 )
 
 set(sources
     ${source_path}/main.cpp
+    ${source_path}/Graphics/Scene.cpp
+    ${source_path}/Graphics/SSSRSettings.cpp
+    ${source_path}/Graphics/Passes/ImGuiPass.cpp
 )
 
 set(pixel_shaders
     ${shaders_path}/VertexColor_PS.hlsl
+    ${shaders_path}/ImGuiPass_PS.hlsl
 )
 
 set(vertex_shaders
     ${shaders_path}/VertexColor_VS.hlsl
+    ${shaders_path}/ImGuiPass_VS.hlsl
 )
 
 set_property(SOURCE ${pixel_shaders} PROPERTY VS_SHADER_ENTRYPOINT mainPS)

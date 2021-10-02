@@ -3,9 +3,6 @@
 #include <cassert>
 #include <algorithm>
 
-//#include "Misc/UtilsMath.h"
-//#include "Misc/Trackball.h"
-
 #include "glm/gtx/euler_angles.hpp"
 
 class CameraPositionerInterface

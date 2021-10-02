@@ -38,3 +38,4 @@ Super Simple Scene Renderer
 - [3D-Graphics-Rendering-Cookbook](https://github.com/PacktPublishing/3D-Graphics-Rendering-Cookbook)
 - [pezcode/Cluster](https://github.com/pezcode/Cluster)
 - [filament](https://github.com/google/filament)
+- [SponzaPbr](https://github.com/andrejnau/SponzaPbr)
