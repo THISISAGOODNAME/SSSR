@@ -147,6 +147,7 @@ void Scene::OnMouseButton(int button, int action)
 
 void Scene::OnScroll(double xoffset, double yoffset)
 {
+    m_cameraFPSPositioner.OnScroll(xoffset, yoffset);
     if (glfwGetInputMode(m_window, GLFW_CURSOR) == GLFW_CURSOR_NORMAL)
     {
         m_imgui_pass.OnScroll(xoffset, yoffset);

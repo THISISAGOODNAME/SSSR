@@ -110,7 +110,36 @@ public:
 	    mousePressed_ = (button == 0 && action == GLFW_PRESS);
 	}
 
-	virtual void OnScroll(double xoffset, double yoffset) override {}
+	virtual void OnScroll(double xoffset, double yoffset) override
+	{
+	    double deltaSeconds = 0.017; // Hack: Fix scroll timesetp
+	    const glm::mat4 v = glm::mat4_cast(cameraOrientation_);
+
+	    const glm::vec3 forward = -glm::vec3(v[0][2], v[1][2], v[2][2]);
+	    const glm::vec3 right = glm::vec3(v[0][0], v[1][0], v[2][0]);
+
+	    glm::vec3 accel(0.0f);
+
+	    if (yoffset > 0) accel += forward;
+	    if (yoffset < 0) accel -= forward;
+
+	    if (movement_.fastSpeed_) accel *= fastCoef_;
+
+	    if (accel == glm::vec3(0))
+	    {
+	        // decelerate naturally according to the damping value
+	        moveSpeed_ -= moveSpeed_ * std::min((1.0f / damping_) * static_cast<float>(deltaSeconds), 1.0f);
+	    }
+	    else
+	    {
+	        // acceleration
+	        moveSpeed_ += accel * acceleration_ * static_cast<float>(deltaSeconds);
+	        const float maxSpeed = movement_.fastSpeed_ ? maxSpeed_ * fastCoef_ : maxSpeed_;
+	        if (glm::length(moveSpeed_) > maxSpeed) moveSpeed_ = glm::normalize(moveSpeed_) * maxSpeed;
+	    }
+
+	    cameraPosition_ += moveSpeed_ * static_cast<float>(deltaSeconds);
+	}
 	virtual void OnInputChar(unsigned int ch) override {}
 
 	void update(double deltaSeconds)
