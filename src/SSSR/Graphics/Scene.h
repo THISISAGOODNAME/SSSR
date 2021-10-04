@@ -12,6 +12,7 @@
 #include "Passes/Equirectangular2Cubemap.h"
 #include "Passes/BackgroundPass.h"
 #include "Passes/IrradianceConversion.h"
+#include "Passes/BRDFGen.h"
 
 #include <string>
 #include <glm/glm.hpp>
@@ -63,9 +64,13 @@ private:
     std::shared_ptr<Resource> m_equirectangular_environment;
     std::shared_ptr<Resource> m_irradince;
     std::shared_ptr<Resource> m_depth_stencil_view_irradince;
+    std::shared_ptr<Resource> m_prefilter;
+    std::shared_ptr<Resource> m_depth_stencil_view_prefilter;
 
     size_t m_irradince_texture_size = 32;
+    size_t m_prefilter_texture_size = 512;
 
+    BRDFGen m_brdflut;
     Equirectangular2Cubemap m_equirectangular2cubemap;
     IrradianceConversion m_irradiance_conversion;
     ForwardPBRPass m_forwardPBR_pass;

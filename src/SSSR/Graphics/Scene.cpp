@@ -14,11 +14,13 @@ Scene::Scene(const Settings& settings, GLFWwindow* window, int width, int height
     , m_model_sphere(*m_device, *m_upload_command_list, ASSETS_PATH"model/sphere.obj")
     , m_model_cube(*m_device, *m_upload_command_list, ASSETS_PATH"model/cube.obj", ~aiProcess_FlipWindingOrder) // Work around for cube culling
     , m_model_square(*m_device, *m_upload_command_list, ASSETS_PATH"model/square.obj")
+    , m_brdflut(*m_device, { m_model_square })
     , m_equirectangular2cubemap(*m_device, { m_model_cube, m_equirectangular_environment })
-    , m_irradiance_conversion(*m_device, { m_model_cube, m_equirectangular2cubemap.output.environment, { m_irradince, m_depth_stencil_view_irradince, m_irradince_texture_size } })
-    , m_forwardPBR_pass(*m_device, *m_upload_command_list, { m_model_sphere, m_render_target_view, m_camera, m_irradince }, width, height)
+    , m_irradiance_conversion(*m_device, { m_model_cube, m_equirectangular2cubemap.output.environment, { m_irradince, m_depth_stencil_view_irradince, m_irradince_texture_size }, { m_prefilter, m_depth_stencil_view_prefilter, m_prefilter_texture_size } })
+    , m_forwardPBR_pass(*m_device, *m_upload_command_list, { m_model_sphere, m_render_target_view, m_camera, m_irradince, m_prefilter, m_brdflut.output.brdflut }, width, height)
     , m_background_pass(*m_device, { m_model_cube, m_camera, m_equirectangular2cubemap.output.environment, m_render_target_view, m_forwardPBR_pass.output.dsv }, width, height)
 //    , m_background_pass(*m_device, { m_model_cube, m_camera, m_irradince, m_render_target_view, m_forwardPBR_pass.output.dsv }, width, height) // For debug draw m_irradince
+//    , m_background_pass(*m_device, { m_model_cube, m_camera, m_prefilter, m_render_target_view, m_forwardPBR_pass.output.dsv }, width, height) // For debug draw m_prefilter
     , m_imgui_pass(*m_device, *m_upload_command_list, { m_render_target_view, *this, m_settings }, width, height, window)
     , m_cameraFPSPositioner(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f))
     , m_camera(m_cameraFPSPositioner, 45.0f, 1280.0f, 720.0f, 0.1f, 1000.0f)
@@ -27,6 +29,7 @@ Scene::Scene(const Settings& settings, GLFWwindow* window, int width, int height
     CreateRT();
 
     // config passes
+    m_passes.push_back({ "Gen BRDF lut Pass", m_brdflut });
     m_passes.push_back({ "equirectangular to cubemap Pass", m_equirectangular2cubemap });
     m_passes.push_back({ "Irradiance Conversion Pass", m_irradiance_conversion });
     m_passes.push_back({ "Forward PBR Pass", m_forwardPBR_pass });
@@ -195,4 +198,6 @@ void Scene::CreateRT()
 
     m_irradince = m_device->CreateTexture(BindFlag::kRenderTarget | BindFlag::kShaderResource, gli::format::FORMAT_RGBA32_SFLOAT_PACK32, 1, m_irradince_texture_size, m_irradince_texture_size, 6);
     m_depth_stencil_view_irradince = m_device->CreateTexture(BindFlag::kDepthStencil, gli::format::FORMAT_D32_SFLOAT_PACK32, 1, m_irradince_texture_size, m_irradince_texture_size, 6);
+    m_prefilter = m_device->CreateTexture(BindFlag::kRenderTarget | BindFlag::kShaderResource, gli::format::FORMAT_RGBA32_SFLOAT_PACK32, 1, m_prefilter_texture_size, m_prefilter_texture_size, 6, log2(m_prefilter_texture_size));
+    m_depth_stencil_view_prefilter = m_device->CreateTexture(BindFlag::kDepthStencil, gli::format::FORMAT_D32_SFLOAT_PACK32, 1, m_prefilter_texture_size, m_prefilter_texture_size, 6, log2(m_prefilter_texture_size));
 }

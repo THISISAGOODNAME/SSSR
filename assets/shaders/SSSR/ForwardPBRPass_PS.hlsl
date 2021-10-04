@@ -28,11 +28,18 @@ cbuffer PerframeData
 cbuffer Settings
 {
     bool use_IBL_diffuse;
+    bool use_IBL_specular;
+    bool use_f0_with_roughness;
+    bool use_spec_ao_by_ndotv_roughness;
     bool only_ambient;
 };
 
 TextureCube irradianceMap;
+TextureCube prefilterMap;
 SamplerState g_sampler;
+
+Texture2D brdfLUT;
+SamplerState brdf_sampler;
 
 #define PI 3.14159265359f
 // ----------------------------------------------------------------------------
@@ -80,13 +87,21 @@ float3 FresnelSchlickRoughness(float cosTheta, float3 F0, float roughness)
 {
     return F0 + (max((float3)(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
 }
-
+// ----------------------------------------------------------------------------
+float computeSpecOcclusion(float NdotV, float AO, float roughness)
+{
+    if (use_spec_ao_by_ndotv_roughness)
+        return saturate(pow(abs(NdotV + AO), exp2(-16.0f * roughness - 1.0f)) - 1.0f + AO);
+    return AO;
+}
+// ----------------------------------------------------------------------------
 float4 mainPS(VS_OUTPUT input) : SV_TARGET
 {
 //     return float4(input.uv, 0.0f, 1.0f);
 
     float3 N = normalize(input.normal);
     float3 V = normalize(camPos - input.worldPos);
+    float3 R = reflect(-V, N);
 
     // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0
     // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)
@@ -146,6 +161,26 @@ float4 mainPS(VS_OUTPUT input) : SV_TARGET
         float3 diffuse = irradiance * albedo;
         ambient = (kD * diffuse) * ao;
     }
+
+    if (use_IBL_specular)
+    {
+        float3 F = F0;
+        if (use_f0_with_roughness)
+            F = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+        // sample both the pre-filter map and the BRDF lut and combine them together as per the Split-Sum approximation to get the IBL specular part.
+//         uint width, height, layers, levels;
+//         prefilterMap.GetDimensions(0, width, height, layers, levels);
+//         float3 prefilteredColor = prefilterMap.SampleLevel(g_sampler, float4(R, ibl_probe_index), roughness * levels).rgb;
+        uint width, height, levels;
+        prefilterMap.GetDimensions(0, width, height, levels);
+        float3 prefilteredColor = prefilterMap.SampleLevel(g_sampler, R, roughness * levels).rgb;
+        float2 brdf = brdfLUT.Sample(brdf_sampler, float2(max(dot(N, V), 0.0), roughness)).rg;
+        float3 specular = prefilteredColor * (F * brdf.x + brdf.y);
+        ambient += specular * computeSpecOcclusion(max(dot(N, V), 0.0), ao, roughness);
+    }
+
+//     if (!use_IBL_diffuse && !use_IBL_specular)
+//         ambient = (0.03).xxx * albedo * ao; // Fallback ambient
 
     if (only_ambient)
         Lo = 0;

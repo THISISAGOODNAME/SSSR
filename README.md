@@ -21,15 +21,23 @@ Super Simple Scene Renderer
 
 # Feature
 
-- [ ] Deferred rendering
+- [ ] Rendering path
+  - [x] Forward rendering
+  - [ ] Deferred rendering
 - [ ] Physically based rendering
   - [x] GGX
-- [ ] Image based lighting
+- [x] Image based lighting
   - [x] Equirectangular2cubemap
+  - [x] Brdf lut
+  - [x] Prefilter environment map
 - [ ] Ambient occlusion
 - [ ] Post Processing      
 - [x] Simple imgui based UI settings
   - [x] ForkAwesome Icons
+
+# Screenshots
+
+![Basic pbr with ibl](screenshots/Snipaste_2021-10-04_21-58-46.png)
 
 # 3rd Party Open Source Libraries
 

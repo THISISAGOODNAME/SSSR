@@ -20,6 +20,8 @@ public:
         std::shared_ptr<Resource>& rtv;
         const Camera& camera;
         std::shared_ptr<Resource>& irradince;
+        std::shared_ptr<Resource>& prefilter;
+        std::shared_ptr<Resource>& brdflut;
     };
 
     struct Output
@@ -44,6 +46,7 @@ private:
 
     ProgramHolder<ForwardPBRPass_PS, ForwardPBRPass_VS> m_program;
     std::shared_ptr<Resource> m_sampler;
+    std::shared_ptr<Resource> m_sampler_brdflut;
 
     void CreateSizeDependentResources();
 };

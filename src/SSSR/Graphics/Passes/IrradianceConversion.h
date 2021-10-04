@@ -5,6 +5,7 @@
 #include <Geometry/Geometry.h>
 #include <ProgramRef/Cubemap_VS.h>
 #include <ProgramRef/IrradianceConvolution_PS.h>
+#include <ProgramRef/Prefilter_PS.h>
 
 class IrradianceConversion : public IPass
 {
@@ -21,6 +22,7 @@ public:
         Model& model;
         std::shared_ptr<Resource>& environment;
         Target irradince;
+        Target prefilter;
     };
 
     struct Output
@@ -35,11 +37,13 @@ public:
 
 private:
     void DrawIrradianceConvolution(RenderCommandList& command_list);
+    void DrawPrefilter(RenderCommandList& command_list);
 
     SSSRSettings m_settings;
     RenderDevice& m_device;
     Input m_input;
     std::shared_ptr<Resource> m_sampler;
     ProgramHolder<Cubemap_VS, IrradianceConvolution_PS> m_program_irradiance_convolution;
+    ProgramHolder<Cubemap_VS, Prefilter_PS> m_program_prefilter;
     bool is = false;
 };

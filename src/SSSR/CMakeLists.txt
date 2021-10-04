@@ -17,6 +17,7 @@ set(headers
     ${source_path}/Graphics/Passes/Equirectangular2Cubemap.h
     ${source_path}/Graphics/Passes/BackgroundPass.h
     ${source_path}/Graphics/Passes/IrradianceConversion.h
+    ${source_path}/Graphics/Passes/BRDFGen.h
 )
 
 set(sources
@@ -28,6 +29,7 @@ set(sources
     ${source_path}/Graphics/Passes/Equirectangular2Cubemap.cpp
     ${source_path}/Graphics/Passes/BackgroundPass.cpp
     ${source_path}/Graphics/Passes/IrradianceConversion.cpp
+    ${source_path}/Graphics/Passes/BRDFGen.cpp
 )
 
 set(shader_headers
@@ -41,6 +43,8 @@ set(pixel_shaders
     ${shaders_path}/Equirectangular2Cubemap_PS.hlsl
     ${shaders_path}/Background_PS.hlsl
     ${shaders_path}/IrradianceConvolution_PS.hlsl
+    ${shaders_path}/Prefilter_PS.hlsl
+    ${shaders_path}/BRDFlut_PS.hlsl
 )
 
 set(vertex_shaders
@@ -49,6 +53,7 @@ set(vertex_shaders
     ${shaders_path}/ForwardPBRPass_VS.hlsl
     ${shaders_path}/Cubemap_VS.hlsl
     ${shaders_path}/Background_VS.hlsl
+    ${shaders_path}/BRDFlut_VS.hlsl
 )
 
 set(compute_shaders

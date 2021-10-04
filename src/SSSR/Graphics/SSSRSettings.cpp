@@ -145,9 +145,13 @@ SSSRSettings::SSSRSettings()
     add_separator("Debug draw");
     add_checkbox("draw_Equirectangular2Cubemap_every_frame", false);
     add_checkbox("draw_IrradianceConversion_every_frame", false);
+    add_checkbox("draw_BRDFlut_every_frame", false);
 
     add_separator("Settings");
     add_checkbox("use_IBL_diffuse", true);
+    add_checkbox("use_IBL_specular", true);
+    add_checkbox("use_f0_with_roughness", false);
+    add_checkbox("use_spec_ao_by_ndotv_roughness", true);
     add_checkbox("only_ambient", false);
 
 //    add_combo("sample_count", sample_count_str, sample_count, sample_count.front());
