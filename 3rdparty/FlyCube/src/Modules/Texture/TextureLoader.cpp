@@ -10,7 +10,8 @@ std::shared_ptr<Resource> CreateSRVFromFile(RenderDevice& device, RenderCommandL
 
     int width = 0;
     int height = 0;
-    unsigned char* image = SOIL_load_image(path.c_str(), &width, &height, 0, SOIL_LOAD_RGBA);
+    int channels = 0;
+    unsigned char* image = SOIL_load_image(path.c_str(), &width, &height, &channels, SOIL_LOAD_RGBA);
     if (!image)
         return {};
 
