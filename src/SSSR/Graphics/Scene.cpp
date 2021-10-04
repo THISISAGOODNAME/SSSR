@@ -24,7 +24,9 @@ Scene::Scene(const Settings& settings, GLFWwindow* window, int width, int height
     // init resources
     CreateRT();
 
-    m_equirectangular_environment = CreateTexture(*m_device, *m_upload_command_list, ASSETS_PATH"model/hdr/newport_loft.dds");
+//    m_equirectangular_environment = CreateTexture(*m_device, *m_upload_command_list, ASSETS_PATH"model/hdr/newport_loft.dds");
+    m_equirectangular_environment = CreateTexture(*m_device, *m_upload_command_list, ASSETS_PATH"model/hdr/piazza_bologni_1k.hdr");
+//    m_equirectangular_environment = CreateTexture(*m_device, *m_upload_command_list, ASSETS_PATH"model/hdr/immenstadter_horn_2k.ktx");
 
     // config passes
     m_passes.push_back({ "equirectangular to cubemap Pass", m_equirectangular2cubemap });
