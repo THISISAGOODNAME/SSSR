@@ -13,8 +13,6 @@ include(compiler_settings)
 
 add_subdirectory(3rdparty/FlyCube)
 
-add_subdirectory(src/01Triangle)
-
 include(3rdparty/imgui)
 include(3rdparty/IconFontCppHeaders)
 
