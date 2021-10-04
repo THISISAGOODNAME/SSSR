@@ -112,6 +112,16 @@ void SSSRSettings::add_slider(const std::string& label, float value, float min, 
     }
 }
 
+void SSSRSettings::add_separator(const std::string &label)
+{
+    m_items.push_back([this, label]() mutable
+    {
+        ImGui::Separator();
+        ImGui::Text(label.c_str());
+        return false;
+    });
+}
+
 SSSRSettings::SSSRSettings()
 {
     std::vector<std::string> sample_count_str = { "Off" };
@@ -122,7 +132,24 @@ SSSRSettings::SSSRSettings()
         sample_count.push_back(i);
     }
 
+    static float f = 0.0f;
+    static int counter = 0;
+
+    m_items.push_back([this]() mutable
+    {
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        return false;
+    });
+
+
+    add_separator("Debug draw");
     add_checkbox("draw_Equirectangular2Cubemap_every_frame", false);
+    add_checkbox("draw_IrradianceConversion_every_frame", false);
+
+    add_separator("Settings");
+    add_checkbox("use_IBL_diffuse", true);
+    add_checkbox("only_ambient", false);
+
 //    add_combo("sample_count", sample_count_str, sample_count, sample_count.front());
 //    add_checkbox("gamma_correction", true);
 //    add_checkbox("use_reinhard_tone_operator", false);

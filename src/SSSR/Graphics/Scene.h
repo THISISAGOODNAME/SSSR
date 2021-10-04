@@ -11,6 +11,7 @@
 #include "Passes/ImGuiPass.h"
 #include "Passes/Equirectangular2Cubemap.h"
 #include "Passes/BackgroundPass.h"
+#include "Passes/IrradianceConversion.h"
 
 #include <string>
 #include <glm/glm.hpp>
@@ -60,8 +61,13 @@ private:
     Model m_model_square;
 
     std::shared_ptr<Resource> m_equirectangular_environment;
+    std::shared_ptr<Resource> m_irradince;
+    std::shared_ptr<Resource> m_depth_stencil_view_irradince;
+
+    size_t m_irradince_texture_size = 32;
 
     Equirectangular2Cubemap m_equirectangular2cubemap;
+    IrradianceConversion m_irradiance_conversion;
     ForwardPBRPass m_forwardPBR_pass;
     BackgroundPass m_background_pass;
     ImGuiPass m_imgui_pass;

@@ -50,6 +50,7 @@ private:
     HotKey& add_checkbox(const std::string& label, bool value);
     void add_slider_int(const std::string& label, int32_t value, int min, int max);
     void add_slider(const std::string& label, float value, float min, float max, bool linear);
+    void add_separator(const std::string& label);
 
     std::vector<std::function<bool(void)>> m_items;
     std::vector<HotKey> m_hotkeys;

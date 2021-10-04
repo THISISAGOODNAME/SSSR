@@ -16,6 +16,7 @@ set(headers
     ${source_path}/Graphics/Passes/ForwardPBRPass.h
     ${source_path}/Graphics/Passes/Equirectangular2Cubemap.h
     ${source_path}/Graphics/Passes/BackgroundPass.h
+    ${source_path}/Graphics/Passes/IrradianceConversion.h
 )
 
 set(sources
@@ -26,6 +27,7 @@ set(sources
     ${source_path}/Graphics/Passes/ForwardPBRPass.cpp
     ${source_path}/Graphics/Passes/Equirectangular2Cubemap.cpp
     ${source_path}/Graphics/Passes/BackgroundPass.cpp
+    ${source_path}/Graphics/Passes/IrradianceConversion.cpp
 )
 
 set(shader_headers
@@ -38,6 +40,7 @@ set(pixel_shaders
     ${shaders_path}/ForwardPBRPass_PS.hlsl
     ${shaders_path}/Equirectangular2Cubemap_PS.hlsl
     ${shaders_path}/Background_PS.hlsl
+    ${shaders_path}/IrradianceConvolution_PS.hlsl
 )
 
 set(vertex_shaders

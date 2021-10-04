@@ -52,6 +52,9 @@ void ForwardPBRPass::OnUpdate()
     m_program.vs.cbuffer.MVP.proj = m_input.camera.getProjMatrix();
 
     m_program.ps.cbuffer.PerframeData.camPos = m_input.camera.getPosition();
+
+    m_program.ps.cbuffer.Settings.use_IBL_diffuse = m_settings.Get<bool>("use_IBL_diffuse");
+    m_program.ps.cbuffer.Settings.only_ambient = m_settings.Get<bool>("only_ambient");
 }
 
 void ForwardPBRPass::OnRender(RenderCommandList& command_list)
@@ -60,7 +63,8 @@ void ForwardPBRPass::OnRender(RenderCommandList& command_list)
 
     command_list.UseProgram(m_program);
 
-//    command_list.Attach(m_program.ps.sampler.g_sampler, m_sampler);
+    command_list.Attach(m_program.ps.cbv.Settings, m_program.ps.cbuffer.Settings);
+    command_list.Attach(m_program.ps.sampler.g_sampler, m_sampler);
 
     RenderPassBeginDesc render_pass_desc = {};
     render_pass_desc.colors[m_program.ps.om.rtv0].texture = m_input.rtv;
@@ -100,6 +104,8 @@ void ForwardPBRPass::OnRender(RenderCommandList& command_list)
             command_list.Attach(m_program.ps.cbv.PerframeData, m_program.ps.cbuffer.PerframeData);
             command_list.Attach(m_program.ps.cbv.Material, m_program.ps.cbuffer.Material);
 
+            command_list.Attach(m_program.ps.srv.irradianceMap, m_input.irradince);
+
             m_input.sphereModel.ia.indices.Bind(command_list);
             m_input.sphereModel.ia.positions.BindToSlot(command_list, m_program.vs.ia.POSITION);
             m_input.sphereModel.ia.normals.BindToSlot(command_list, m_program.vs.ia.NORMAL);
@@ -125,4 +131,9 @@ void ForwardPBRPass::OnResize(int width, int height)
 void ForwardPBRPass::CreateSizeDependentResources()
 {
     output.dsv = m_device.CreateTexture(BindFlag::kDepthStencil, gli::format::FORMAT_D32_SFLOAT_PACK32, 1, m_width, m_height, 1);
+}
+
+void ForwardPBRPass::OnModifySSSRSettings(const SSSRSettings &settings)
+{
+    m_settings = settings;
 }

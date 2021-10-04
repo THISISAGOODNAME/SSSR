@@ -25,6 +25,15 @@ cbuffer PerframeData
     float3 camPos;
 };
 
+cbuffer Settings
+{
+    bool use_IBL_diffuse;
+    bool only_ambient;
+};
+
+TextureCube irradianceMap;
+SamplerState g_sampler;
+
 #define PI 3.14159265359f
 // ----------------------------------------------------------------------------
 float DistributionGGX(float3 N, float3 H, float roughness)
@@ -65,6 +74,11 @@ float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
 float3 fresnelSchlick(float cosTheta, float3 F0)
 {
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}
+
+float3 FresnelSchlickRoughness(float cosTheta, float3 F0, float roughness)
+{
+    return F0 + (max((float3)(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
 float4 mainPS(VS_OUTPUT input) : SV_TARGET
@@ -121,6 +135,19 @@ float4 mainPS(VS_OUTPUT input) : SV_TARGET
     // ambient lighting (note that the next IBL tutorial will replace
     // this ambient lighting with environment lighting).
     float3 ambient = (0.03).xxx * albedo * ao;
+    if (use_IBL_diffuse)
+    {
+        // ambient lighting (we now use IBL as the ambient term)
+        float3 kS = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+        float3 kD = 1.0 - kS;
+        kD *= 1.0 - metallic;
+        float3 irradiance = irradianceMap.Sample(g_sampler, N).rgb;
+        float3 diffuse = irradiance * albedo;
+        ambient = (kD * diffuse) * ao;
+    }
+
+    if (only_ambient)
+        Lo = 0;
 
     float3 color = ambient + Lo;
 
@@ -130,7 +157,4 @@ float4 mainPS(VS_OUTPUT input) : SV_TARGET
     color = pow(color, (1.0/2.2).xxx);
 
     return float4(color, 1.0);
-//     return float4(N, 1.0f);
-//     return float4(input.normal, 1.0f);
-//     return float4(input.worldPos, 1.0f);
 }

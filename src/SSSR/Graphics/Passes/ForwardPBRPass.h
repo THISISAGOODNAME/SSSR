@@ -19,6 +19,7 @@ public:
         Model& sphereModel;
         std::shared_ptr<Resource>& rtv;
         const Camera& camera;
+        std::shared_ptr<Resource>& irradince;
     };
 
     struct Output
@@ -32,8 +33,10 @@ public:
     virtual void OnUpdate() override;
     virtual void OnRender(RenderCommandList& command_list)override;
     virtual void OnResize(int width, int height) override;
+    virtual void OnModifySSSRSettings(const SSSRSettings& settings) override;
 
 private:
+    SSSRSettings m_settings;
     RenderDevice& m_device;
     Input m_input;
     int m_width;

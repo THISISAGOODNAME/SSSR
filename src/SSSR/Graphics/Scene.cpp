@@ -15,8 +15,10 @@ Scene::Scene(const Settings& settings, GLFWwindow* window, int width, int height
     , m_model_cube(*m_device, *m_upload_command_list, ASSETS_PATH"model/cube.obj", ~aiProcess_FlipWindingOrder) // Work around for cube culling
     , m_model_square(*m_device, *m_upload_command_list, ASSETS_PATH"model/square.obj")
     , m_equirectangular2cubemap(*m_device, { m_model_cube, m_equirectangular_environment })
-    , m_forwardPBR_pass(*m_device, *m_upload_command_list, { m_model_sphere, m_render_target_view, m_camera }, width, height)
+    , m_irradiance_conversion(*m_device, { m_model_cube, m_equirectangular2cubemap.output.environment, { m_irradince, m_depth_stencil_view_irradince, m_irradince_texture_size } })
+    , m_forwardPBR_pass(*m_device, *m_upload_command_list, { m_model_sphere, m_render_target_view, m_camera, m_irradince }, width, height)
     , m_background_pass(*m_device, { m_model_cube, m_camera, m_equirectangular2cubemap.output.environment, m_render_target_view, m_forwardPBR_pass.output.dsv }, width, height)
+//    , m_background_pass(*m_device, { m_model_cube, m_camera, m_irradince, m_render_target_view, m_forwardPBR_pass.output.dsv }, width, height) // For debug draw m_irradince
     , m_imgui_pass(*m_device, *m_upload_command_list, { m_render_target_view, *this, m_settings }, width, height, window)
     , m_cameraFPSPositioner(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f))
     , m_camera(m_cameraFPSPositioner, 45.0f, 1280.0f, 720.0f, 0.1f, 1000.0f)
@@ -24,12 +26,9 @@ Scene::Scene(const Settings& settings, GLFWwindow* window, int width, int height
     // init resources
     CreateRT();
 
-//    m_equirectangular_environment = CreateTexture(*m_device, *m_upload_command_list, ASSETS_PATH"model/hdr/newport_loft.dds");
-    m_equirectangular_environment = CreateTexture(*m_device, *m_upload_command_list, ASSETS_PATH"model/hdr/piazza_bologni_1k.hdr");
-//    m_equirectangular_environment = CreateTexture(*m_device, *m_upload_command_list, ASSETS_PATH"model/hdr/immenstadter_horn_2k.ktx");
-
     // config passes
     m_passes.push_back({ "equirectangular to cubemap Pass", m_equirectangular2cubemap });
+    m_passes.push_back({ "Irradiance Conversion Pass", m_irradiance_conversion });
     m_passes.push_back({ "Forward PBR Pass", m_forwardPBR_pass });
     m_passes.push_back({ "Skybox Pass", m_background_pass });
     m_passes.push_back({ "ImGui Pass", m_imgui_pass });
@@ -189,4 +188,11 @@ void Scene::OnModifySSSRSettings(const SSSRSettings& settings)
 void Scene::CreateRT()
 {
     m_depth_stencil_view = m_device->CreateTexture(BindFlag::kDepthStencil, gli::format::FORMAT_D32_SFLOAT_PACK32, 1, m_width, m_height, 1);
+
+    //    m_equirectangular_environment = CreateTexture(*m_device, *m_upload_command_list, ASSETS_PATH"model/hdr/newport_loft.dds");
+    m_equirectangular_environment = CreateTexture(*m_device, *m_upload_command_list, ASSETS_PATH"model/hdr/piazza_bologni_1k.hdr");
+    //    m_equirectangular_environment = CreateTexture(*m_device, *m_upload_command_list, ASSETS_PATH"model/hdr/immenstadter_horn_2k.ktx");
+
+    m_irradince = m_device->CreateTexture(BindFlag::kRenderTarget | BindFlag::kShaderResource, gli::format::FORMAT_RGBA32_SFLOAT_PACK32, 1, m_irradince_texture_size, m_irradince_texture_size, 6);
+    m_depth_stencil_view_irradince = m_device->CreateTexture(BindFlag::kDepthStencil, gli::format::FORMAT_D32_SFLOAT_PACK32, 1, m_irradince_texture_size, m_irradince_texture_size, 6);
 }
