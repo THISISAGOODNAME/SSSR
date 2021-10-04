@@ -19,6 +19,18 @@
 
 Super Simple Scene Renderer
 
+# Feature
+
+- [ ] Deferred rendering
+- [ ] Physically based rendering
+  - [x] GGX
+- [ ] Image based lighting
+  - [x] Equirectangular2cubemap
+- [ ] Ambient occlusion
+- [ ] Post Processing      
+- [x] Simple imgui based UI settings
+  - [x] ForkAwesome Icons
+
 # 3rd Party Open Source Libraries
 
 - [FlyCube](https://github.com/andrejnau/FlyCube)

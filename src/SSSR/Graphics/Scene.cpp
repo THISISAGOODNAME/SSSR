@@ -12,16 +12,27 @@ Scene::Scene(const Settings& settings, GLFWwindow* window, int width, int height
     , m_height(height)
     , m_upload_command_list(m_device->CreateRenderCommandList())
     , m_model_sphere(*m_device, *m_upload_command_list, ASSETS_PATH"model/sphere.obj")
+    , m_model_cube(*m_device, *m_upload_command_list, ASSETS_PATH"model/cube.obj", ~aiProcess_FlipWindingOrder) // Work around for cube culling
+    , m_model_square(*m_device, *m_upload_command_list, ASSETS_PATH"model/square.obj")
+    , m_equirectangular2cubemap(*m_device, { m_model_cube, m_equirectangular_environment })
     , m_forwardPBR_pass(*m_device, *m_upload_command_list, { m_model_sphere, m_render_target_view, m_camera }, width, height)
+    , m_background_pass(*m_device, { m_model_cube, m_camera, m_equirectangular2cubemap.output.environment, m_render_target_view, m_forwardPBR_pass.output.dsv }, width, height)
     , m_imgui_pass(*m_device, *m_upload_command_list, { m_render_target_view, *this, m_settings }, width, height, window)
     , m_cameraFPSPositioner(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f))
     , m_camera(m_cameraFPSPositioner, 45.0f, 1280.0f, 720.0f, 0.1f, 1000.0f)
 {
+    // init resources
     CreateRT();
 
+    m_equirectangular_environment = CreateTexture(*m_device, *m_upload_command_list, ASSETS_PATH"model/hdr/newport_loft.dds");
+
+    // config passes
+    m_passes.push_back({ "equirectangular to cubemap Pass", m_equirectangular2cubemap });
     m_passes.push_back({ "Forward PBR Pass", m_forwardPBR_pass });
+    m_passes.push_back({ "Skybox Pass", m_background_pass });
     m_passes.push_back({ "ImGui Pass", m_imgui_pass });
 
+    // finish init
     for (uint32_t i = 0; i < settings.frame_count * m_passes.size(); ++i)
         m_command_lists.emplace_back(m_device->CreateRenderCommandList());
 
@@ -115,13 +126,12 @@ void Scene::OnKey(int key, int action)
 
 void Scene::OnMouse(bool first_event, double xpos, double ypos)
 {
-    m_cameraFPSPositioner.OnMouse(first_event, xpos, ypos);
-
     if (glfwGetInputMode(m_window, GLFW_CURSOR) == GLFW_CURSOR_NORMAL)
     {
         m_imgui_pass.OnMouse(first_event, xpos, ypos);
         return;
     }
+    m_cameraFPSPositioner.OnMouse(first_event, xpos, ypos);
 
     if (first_event)
     {
@@ -138,19 +148,22 @@ void Scene::OnMouse(bool first_event, double xpos, double ypos)
 
 void Scene::OnMouseButton(int button, int action)
 {
-    m_cameraFPSPositioner.OnMouseButton(button, action);
     if (glfwGetInputMode(m_window, GLFW_CURSOR) == GLFW_CURSOR_NORMAL)
     {
         m_imgui_pass.OnMouseButton(button, action);
     }
+    m_cameraFPSPositioner.OnMouseButton(button, action);
 }
 
 void Scene::OnScroll(double xoffset, double yoffset)
 {
-    m_cameraFPSPositioner.OnScroll(xoffset, yoffset);
     if (glfwGetInputMode(m_window, GLFW_CURSOR) == GLFW_CURSOR_NORMAL)
     {
         m_imgui_pass.OnScroll(xoffset, yoffset);
+    }
+    else
+    {
+        m_cameraFPSPositioner.OnScroll(xoffset, yoffset);
     }
 }
 

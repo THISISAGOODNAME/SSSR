@@ -9,6 +9,8 @@
 
 #include "Passes/ForwardPBRPass.h"
 #include "Passes/ImGuiPass.h"
+#include "Passes/Equirectangular2Cubemap.h"
+#include "Passes/BackgroundPass.h"
 
 #include <string>
 #include <glm/glm.hpp>
@@ -54,8 +56,14 @@ private:
     std::shared_ptr<Resource> m_depth_stencil_view;
 
     Model m_model_sphere;
+    Model m_model_cube;
+    Model m_model_square;
 
+    std::shared_ptr<Resource> m_equirectangular_environment;
+
+    Equirectangular2Cubemap m_equirectangular2cubemap;
     ForwardPBRPass m_forwardPBR_pass;
+    BackgroundPass m_background_pass;
     ImGuiPass m_imgui_pass;
     SSSRSettings m_settings;
 
