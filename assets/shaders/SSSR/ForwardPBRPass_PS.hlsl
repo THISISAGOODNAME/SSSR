@@ -134,7 +134,8 @@ float4 mainPS(VS_OUTPUT input) : SV_TARGET
 
     // ambient lighting (note that the next IBL tutorial will replace
     // this ambient lighting with environment lighting).
-    float3 ambient = (0.03).xxx * albedo * ao;
+//     float3 ambient = (0.03).xxx * albedo * ao;
+    float3 ambient = 0.0;
     if (use_IBL_diffuse)
     {
         // ambient lighting (we now use IBL as the ambient term)
