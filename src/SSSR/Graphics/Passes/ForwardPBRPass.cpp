@@ -90,7 +90,7 @@ void ForwardPBRPass::OnRender(RenderCommandList& command_list)
                     (row - (nrRows / 2)) * spacing,
                     0.0f
                     ));
-//            model = glm::scale(model, glm::vec3(0.05f));
+            model = glm::scale(model, glm::vec3(0.05f));
 
             m_program.vs.cbuffer.MVP.model = model;
 
