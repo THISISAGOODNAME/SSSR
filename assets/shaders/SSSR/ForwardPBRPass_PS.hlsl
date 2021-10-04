@@ -168,9 +168,6 @@ float4 mainPS(VS_OUTPUT input) : SV_TARGET
         if (use_f0_with_roughness)
             F = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
         // sample both the pre-filter map and the BRDF lut and combine them together as per the Split-Sum approximation to get the IBL specular part.
-//         uint width, height, layers, levels;
-//         prefilterMap.GetDimensions(0, width, height, layers, levels);
-//         float3 prefilteredColor = prefilterMap.SampleLevel(g_sampler, float4(R, ibl_probe_index), roughness * levels).rgb;
         uint width, height, levels;
         prefilterMap.GetDimensions(0, width, height, levels);
         float3 prefilteredColor = prefilterMap.SampleLevel(g_sampler, R, roughness * levels).rgb;
@@ -179,8 +176,8 @@ float4 mainPS(VS_OUTPUT input) : SV_TARGET
         ambient += specular * computeSpecOcclusion(max(dot(N, V), 0.0), ao, roughness);
     }
 
-//     if (!use_IBL_diffuse && !use_IBL_specular)
-//         ambient = (0.03).xxx * albedo * ao; // Fallback ambient
+    if (!use_IBL_diffuse && !use_IBL_specular)
+        ambient = (0.03).xxx * albedo * ao; // Fallback ambient
 
     if (only_ambient)
         Lo = 0;
