@@ -121,9 +121,18 @@ std::vector<uint8_t> Compile(const ShaderDesc& shader, ShaderBlobType blob_type)
     IncludeHandler include_handler(library, shader_dir);
     ComPtr<IDxcCompiler> compiler;
     dxc_support.CreateInstance(CLSID_DxcCompiler, compiler.GetAddressOf());
+
+    LPCWSTR pSourceName;
+    switch (shader.type) {
+        case ShaderType::kVertex: pSourceName = L"mainVS.hlsl"; break;
+        case ShaderType::kPixel: pSourceName = L"mainPS.hlsl"; break;
+        case ShaderType::kCompute: pSourceName = L"mainCS.hlsl"; break;
+        default: pSourceName = L"main.hlsl";
+    }
+
     ASSERT_SUCCEEDED(compiler->Compile(
         source.Get(),
-        L"main.hlsl",
+        pSourceName,
         entrypoint.c_str(),
         target.c_str(),
         arguments.data(), static_cast<UINT32>(arguments.size()),
