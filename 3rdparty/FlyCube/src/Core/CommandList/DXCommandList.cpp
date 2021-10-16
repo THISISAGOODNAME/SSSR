@@ -15,7 +15,7 @@
 #include <directx/d3d12.h>
 #include <directx/d3dx12.h>
 #include <gli/dx.hpp>
-#include <pix.h>
+#include <WinPixEventRuntime/pix3.h>
 
 DXCommandList::DXCommandList(DXDevice& device, CommandListType type)
     : m_device(device)

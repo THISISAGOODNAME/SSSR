@@ -44,6 +44,7 @@ if (DIRECTX_SUPPORT)
         d3d12
         dxgi
         dxguid
+        winpixeventruntime
     )
 endif()
 

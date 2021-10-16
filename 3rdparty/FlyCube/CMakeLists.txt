@@ -23,6 +23,7 @@ include(3rdparty/gli)
 include(3rdparty/mustache)
 include(3rdparty/catch2)
 include(3rdparty/dxc)
+include(3rdparty/winpixeventruntime)
 
 if (VULKAN_SUPPORT)
     add_definitions(-DVULKAN_SUPPORT)

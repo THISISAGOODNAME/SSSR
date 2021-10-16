@@ -106,6 +106,12 @@ target_link_libraries(${target}
     Texture
 )
 
+add_custom_command(TARGET ${target} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${project_root}/3rdparty/FlyCube/3rdparty/winpixeventruntime/bin/x64/WinPixEventRuntime.dll"
+    "${CMAKE_CURRENT_BINARY_DIR}"
+)
+
 set_target_properties(${target} PROPERTIES FOLDER "Apps")
 
 #set_property(TARGET ${target}  PROPERTY UNITY_BUILD ON)
